@@ -12,19 +12,34 @@ import ec2._
 /** Runs AWS commands (i.e. calls APIs) from an arbitrary EC2 instance. */
 case class AssumedApiRunner(assumedInstanceName: String, login: String, password: String, region: String) {
   def listBuckets() =
-    ssh(s"aws --region $region s3api list-buckets")
+    ssh(listBucketsCmd)
+
+  def listBucketsCmd =
+    s"aws --region $region s3api list-buckets"
 
   def createBucket(bucket: String) =
-    ssh(s"aws --region $region s3api create-bucket --bucket '$bucket'")
+    ssh(createBucketCmd(bucket))
+
+  def createBucketCmd(bucket: String) =
+    s"aws --region $region s3api create-bucket --bucket '$bucket'"
 
   def listObjects(bucket: String) =
-    ssh(s"aws --region $region s3api list-objects --bucket $bucket")
+    ssh(listObjectsCmd(bucket))
+
+  def listObjectsCmd(bucket: String) =
+    s"aws --region $region s3api list-objects --bucket $bucket"
 
   def putObject(bucket: String, key: String, value: String) =
-    ssh(s"aws --region $region s3api put-object --bucket '$bucket' --key '$key'")
+    ssh(putObjectCmd(bucket, key, value))
+
+  def putObjectCmd(bucket: String, key: String, value: String) =
+    s"aws --region $region s3api put-object --bucket '$bucket' --key '$key'"
 
   def getObject(bucket: String, key: String) =
-    ssh(s"aws --region $region s3api get-object --bucket '$bucket' --key '$key' /tmp/outfile")
+    ssh(getObjectCmd(bucket, key))
+
+  def getObjectCmd(bucket: String, key: String) =
+    s"aws --region $region s3api get-object --bucket '$bucket' --key '$key' /tmp/outfile"
 
   lazy val dns: Validated[String] = {
     val ec2 = EC2()
@@ -43,15 +58,18 @@ case class AssumedApiRunner(assumedInstanceName: String, login: String, password
       host <- dns
       result <- SSH(host, config)(_.exec(cmd))
     } yield (result)
+
+  def sshCmds(cmds: List[String]): Validated[List[CommandResult]] =
+    dns.flatMap(h => SSH(h, config)(c => SSH.Result(cmds.map(cmd => c.exec(cmd)).sequence)))
 }
 
 
 object AssumedApiRunner extends MustMatchers {
-  def beGranted: Matcher[Validated[CommandResult]] =
-    (result: Validated[CommandResult]) => result.right.map(_.stdErrAsString().isEmpty) must beRight(true)
+  def beGranted: Matcher[CommandResult] =
+    (result: CommandResult) => result.stdErrAsString().isEmpty must beTrue
 
-  def beDenied: Matcher[Validated[CommandResult]] =
-    (result: Validated[CommandResult]) => result.right.map(_.stdErrAsString().isEmpty) must beRight(false)
+  def beDenied: Matcher[CommandResult] =
+    (result: CommandResult) => result.stdErrAsString().isEmpty must beFalse
 }
 
 
