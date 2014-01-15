@@ -4,6 +4,7 @@ package testing
 import scalaz._, Scalaz._
 import org.specs2.matcher._
 import scala.collection.JavaConversions._
+import com.ambiata.saws.core._
 import com.amazonaws.services.ec2.model._
 import com.decodified.scalassh._
 import ec2._
@@ -42,8 +43,7 @@ case class AssumedApiRunner(assumedInstanceName: String, login: String, password
     s"aws --region $region s3api get-object --bucket '$bucket' --key '$key' /tmp/outfile"
 
   lazy val dns: Validated[String] = {
-    val ec2 = EC2()
-    val reservations: List[Reservation] = ec2.client.describeInstances.getReservations.toList
+    val reservations: List[Reservation] = Clients.ec2.describeInstances.getReservations.toList
     val instances: List[Instance] = reservations.flatMap(_.getInstances)
     val instance =
       instances.find(_.getTags.exists(t => t.getKey == "Name" && t.getValue == assumedInstanceName))
