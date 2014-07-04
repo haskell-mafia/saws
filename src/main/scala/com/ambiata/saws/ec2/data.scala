@@ -88,8 +88,11 @@ object EC2InstanceSize {
     instanceMappings.get(size)
 }
 
-// Micro
+// Tiny
 case object T1Micro extends EC2InstanceSize("t1.micro", EC2Devices0)
+case object T2Micro extends EC2InstanceSize("t2.micro", EC2Devices0)
+case object T2Small extends EC2InstanceSize("t2.small", EC2Devices0)
+case object T2Medium extends EC2InstanceSize("t2.medium", EC2Devices0)
 
 // General Purpose - Current Generation
 case object M3Medium extends EC2InstanceSize("m3.medium", EC2Devices1)
