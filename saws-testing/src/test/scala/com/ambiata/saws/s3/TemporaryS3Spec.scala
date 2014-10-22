@@ -18,7 +18,7 @@ class TemporaryS3Spec extends Specification { def is = s2"""
 """
 
   def singleAddress = {
-    val p = S3Address(testBucket, s3TempPath)
+    val p = s3TempAddress
     (for {
       x <- TemporaryS3.runWithS3Address(p)(s3 => for {
         _ <- s3.put("").executeT(TemporaryS3.conf)
@@ -29,7 +29,7 @@ class TemporaryS3Spec extends Specification { def is = s2"""
   }
   
   def prefix = {
-    val p = S3Prefix(testBucket, s3TempPath)
+    val p = s3TempPrefix
     (for {
       x <- TemporaryS3.runWithS3Prefix(p)(s3 =>  for {
         _ <- (s3 | "foo").put("").executeT(TemporaryS3.conf)

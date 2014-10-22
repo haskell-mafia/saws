@@ -33,6 +33,8 @@ class S3PrefixSpec extends Specification with ScalaCheck { def is = section("aws
  Support functions
  =========================================
 
+  Can handle incorrect prefix           $prefixFailure
+  Can handle correct prefix             $prefix
   Can retrieve S3Prefix from uri        $fromUri
 
 """
@@ -129,6 +131,12 @@ class S3PrefixSpec extends Specification with ScalaCheck { def is = section("aws
     val foo = S3Prefix("bucket","a/b/e")
     s3.removeCommonPrefix(foo) must_== None
   }
+
+  def prefixFailure =
+    S3Prefix("bucket", "a/b/c/d/").prefix must_==("a/b/c/d")
+
+  def prefix =
+    S3Prefix("bucket", "a/b/c/d").prefix must_==("a/b/c/d")
 
   def fromUri =
     TemporaryS3.withS3Prefix(s3 => for {
