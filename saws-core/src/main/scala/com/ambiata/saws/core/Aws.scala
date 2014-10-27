@@ -91,6 +91,9 @@ object Aws {
   def io[R, A](f: R => IO[A]): Aws[R, A] =
     Aws(ActionT(r => ResultT[({ type l[a] = WriterT[IO, Vector[AwsLog], a] })#l, A](WriterT[IO, Vector[AwsLog], Result[A]](f(r).map(a => (Vector[AwsLog](), Result.ok(a)))))))
 
+  def unit[R]: Aws[R, Unit] =
+    ok(())
+
   def resultT[R, A](f: R => ResultT[IO, A]): Aws[R, A] =
     Aws(ActionT.resultT(f))
 
@@ -111,6 +114,12 @@ object Aws {
 
   def these[R, A](both: These[String, Throwable]): Aws[R, A] =
     Aws(ActionT.these[IO, Vector[AwsLog], R, A](both))
+
+  def when[R](v: Boolean, thunk: => Aws[R, Unit]): Aws[R, Unit] =
+    if (v) thunk else unit
+
+  def unless[R](v: Boolean, thunk: => Aws[R, Unit]): Aws[R, Unit] =
+    when(!v, thunk)
 
   def fromDisjunction[R, A](either: These[String, Throwable] \/ A): Aws[R, A] =
     Aws(ActionT.fromDisjunction(either))
@@ -166,6 +175,9 @@ trait AwsSupport[R] {
   def io[A](f: R => IO[A]): Aws[R, A] =
     Aws.io[R, A](f)
 
+  def unit: Aws[R, Unit] =
+    ok(())
+
   def resultT[A](f: R => ResultT[IO, A]): Aws[R, A] =
     Aws.resultT[R, A](f)
 
@@ -186,6 +198,12 @@ trait AwsSupport[R] {
 
   def these[A](both: These[String, Throwable]): Aws[R, A] =
     Aws.these[R, A](both)
+
+  def when(v: Boolean, thunk: => Aws[R, Unit]): Aws[R, Unit] =
+    Aws.when[R](v, thunk)
+
+  def unless(v: Boolean, thunk: => Aws[R, Unit]): Aws[R, Unit] =
+    Aws.unless[R](v, thunk)
 
   def fromIO[A](v: IO[A]): Aws[R, A] =
     Aws.fromIO[R, A](v)
