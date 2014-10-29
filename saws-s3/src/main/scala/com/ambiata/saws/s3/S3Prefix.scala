@@ -16,12 +16,16 @@ import scala.annotation.tailrec
  * Representation of a prefix on S3 designated by a `bucket` and a `prefix`.
  *
  */
-case class S3Prefix(bucket: String, prefix: String) {
+case class S3Prefix(bucket: String, unsanitized: String) {
   def toS3Pattern: S3Pattern =
     S3Pattern(bucket, prefix)
 
   def removeCommonPrefix(data: S3Prefix): Option[String] =
     Op.removeCommonPrefix(bucket, prefix, data.bucket, data.prefix)
+
+  def prefix: String =
+    if (unsanitized.endsWith(S3Operations.DELIMITER)) unsanitized.dropRight(1)
+    else unsanitized
 
   def render: String =
     Op.render(bucket, prefix)

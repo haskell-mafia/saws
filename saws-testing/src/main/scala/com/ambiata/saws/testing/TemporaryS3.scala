@@ -31,19 +31,22 @@ object TemporaryS3 {
   }
 
   def withS3Address[A](f: S3Address => ResultTIO[A]): ResultTIO[A] =
-    runWithS3Address(S3Address(testBucket, s3TempPath))(f)
+    runWithS3Address(s3TempAddress)(f)
 
   def runWithS3Address[A](s3: S3Address)(f: S3Address => ResultTIO[A]): ResultTIO[A] =
     ResultT.using(TemporaryS3Address(s3).pure[ResultTIO])(tmp => f(tmp.s3))
 
   def withS3Prefix[A](f: S3Prefix => ResultTIO[A]): ResultTIO[A] =
-    runWithS3Prefix(S3Prefix(testBucket, s3TempPath))(f)
+    runWithS3Prefix(s3TempPrefix)(f)
 
   def runWithS3Prefix[A](s3: S3Prefix)(f: S3Prefix => ResultTIO[A]): ResultTIO[A] =
     ResultT.using(TemporaryS3Prefix(s3).pure[ResultTIO])(tmp => f(tmp.s3))
 
-
   def testBucket: String = Option(System.getenv("AWS_TEST_BUCKET")).getOrElse("ambiata-dev-view")
 
   def s3TempPath: String = s"tests/temporary-${UUID.randomUUID()}"
+
+  def s3TempAddress: S3Address = S3Address(testBucket, s3TempPath)
+
+  def s3TempPrefix: S3Prefix = S3Prefix(testBucket, s3TempPath)
 }
