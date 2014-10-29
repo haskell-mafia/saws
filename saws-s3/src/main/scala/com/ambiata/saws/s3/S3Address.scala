@@ -44,6 +44,9 @@ case class S3Address(bucket: String, key: String) {
   def size: S3Action[Long] =
     getS3.map(_.size)
 
+  def prefix: S3Prefix =
+    S3Prefix(bucket, key.split(Op.DELIMITER).dropRight(1).mkString(Op.DELIMITER))
+
 // ------------ Useful operations
 
   def withStreamUnsafe[A](f: InputStream => A): S3Action[A] =
