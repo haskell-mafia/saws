@@ -106,6 +106,38 @@ object Policy {
     Policy("iam-list-account-aliases", doc)
   }
 
+  /** Create a policy allowing full access to all Autoscaling actions. */
+  val allowAutoscalingFullAccess: Policy = {
+    val doc =
+      s"""|{
+          |  "Version": "2012-10-17",
+          |  "Statement": [
+          |    {
+          |      "Action": "autoscaling:*",
+          |      "Effect": "Allow",
+          |      "Resource": "*"
+          |    }
+          |  ]
+          |}""".stripMargin
+    Policy("autoscaling-full-access", doc)
+  }
+
+  /** Create a policy allowing full access to all ELB actions. */
+  val allowELBFullAccess: Policy = {
+    val doc =
+      s"""|{
+          |  "Version": "2012-10-17",
+          |  "Statement": [
+          |    {
+          |      "Action": "elasticloadbalancing:*",
+          |      "Effect": "Allow",
+          |      "Resource": "arn:aws:elasticloadbalancing:*"
+          |    }
+          |  ]
+          |}""".stripMargin
+    Policy("elb-full-access", doc)
+  }
+
   /** Create a policy allowing full access to all EC2 actions. */
   val allowEc2FullAccess: Policy = {
     val doc =
@@ -121,6 +153,8 @@ object Policy {
           |}""".stripMargin
     Policy("ec2-full-access", doc)
   }
+
+
 
   /** Create a policy allowing access to describe tags. */
   val allowEc2DescribeTags: Policy = {
