@@ -51,6 +51,12 @@ object Policy {
     Policy(name, allowS3PathForActions(path, Seq("PutObject", "PutObjectAcl", "GetObject", "DeleteObject"), constrainList))
   }
 
+  /** Create a policy allowing 'GetObject', 'DeleteObject' and 'ListBucket' for the specified S3 path. */
+  def allowS3ReadDeletePath(path: String, constrainList: Boolean): Policy  = {
+    val name = s"ReadDeleteAccessTo_$path".replace('/', '+')
+    Policy(name, allowS3PathForActions(path, Seq("GetObject", "DeleteObject"), constrainList))
+  }
+
   /** Create a policy allowing 'ListBucket' and other S3 actions for the specified S3 path. */
   def allowS3PathForActions(path: String, actions: Seq[String], constrainList: Boolean) = {
     val s3Actions = actions.map(a => s""""s3:${a}"""").mkString(",")
