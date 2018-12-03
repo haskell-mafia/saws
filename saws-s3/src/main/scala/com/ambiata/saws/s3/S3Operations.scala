@@ -4,7 +4,7 @@ import com.ambiata.saws.core._
 import com.ambiata.mundane.io._, MemoryConversions._
 
 import com.amazonaws.event.{ProgressEvent, ProgressListener}
-import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model._
 import com.amazonaws.services.s3.transfer.{TransferManagerConfiguration, TransferManager}
 import com.amazonaws.services.s3.transfer.model.UploadResult
@@ -83,7 +83,7 @@ object S3Operations {
    */
   def putStreamMultiPartWithMetaData(bucket: String, key: String, maxPartSize: BytesQuantity, stream: InputStream, readLimit: Int,
                                      tick: Long => Unit, metadata: ObjectMetadata): S3Action[S3UploadResult] = {
-    S3Action { client: AmazonS3Client =>
+    S3Action { client: AmazonS3 =>
       // create a transfer manager
       val configuration = new TransferManagerConfiguration
       if (maxPartSize < 5.mb.toBytes) setupConf(5.mb.toBytes.value)
@@ -108,7 +108,7 @@ object S3Operations {
   /** cache and pass your own transfer manager if you need to run lots of uploads */
   def putStreamMultiPartWithTransferManager(bucket: String, key: String, transferManager: TransferManager, stream: InputStream,
                                             readLimit: Int, tick: Long => Unit, metadata: ObjectMetadata): S3Action[() => UploadResult] = {
-    S3Action { client: AmazonS3Client =>
+    S3Action { client: AmazonS3 =>
       // start the upload and wait for the result
       val r = new PutObjectRequest(bucket, key, stream, metadata)
       r.getRequestClientOptions.setReadLimit(readLimit)

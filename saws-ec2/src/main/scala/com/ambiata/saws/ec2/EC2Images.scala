@@ -1,14 +1,12 @@
 package com.ambiata.saws
 package ec2
 
-import com.amazonaws.services.ec2.AmazonEC2Client
-import com.amazonaws.services.ec2.model.{SecurityGroup => AwsSecurityGroup, _}
+import com.amazonaws.services.ec2.model._
 import com.ambiata.saws.core._
-import com.ambiata.saws.iam._
-import com.owtelse.codec.Base64
+import scalaz.Scalaz._
+import scalaz._
 
 import scala.collection.JavaConverters._
-import scalaz._, Scalaz._
 
 
 object EC2Images {

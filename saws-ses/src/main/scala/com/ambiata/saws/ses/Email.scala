@@ -9,7 +9,7 @@ import scala.collection.JavaConverters._
 import scalaz._, Scalaz._, \&/._
 
 object Email {
-  def withClient[A](f: AmazonSimpleEmailServiceClient => A): Result[A] =
+  def withClient[A](f: AmazonSimpleEmailService => A): Result[A] =
     Result.safe(f(core.Clients.ses))
 
   def send(message: Message): Result[MessageId] =

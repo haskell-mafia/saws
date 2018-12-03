@@ -1,7 +1,7 @@
 package com.ambiata.saws
 package iam
 
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient
+import com.amazonaws.services.identitymanagement.{AmazonIdentityManagement, AmazonIdentityManagementClient}
 import com.amazonaws.services.identitymanagement.model.{InstanceProfile => AwsInstanceProfile, _}
 import com.ambiata.mundane.control.Result
 import com.ambiata.mundane.control.Result.safe
@@ -12,7 +12,7 @@ import scalaz._
 import scala.collection.JavaConverters._
 
 /** Wrapper for Java IAM client. */
-case class IAM(client: AmazonIdentityManagementClient) {
+case class IAM(client: AmazonIdentityManagement) {
 
   /** Returns true if a role with the specified name exists. */
   def roleExists(roleName: String): Result[Boolean] =

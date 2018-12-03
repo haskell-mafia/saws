@@ -1,11 +1,11 @@
 package com.ambiata.saws
 package core
 
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient
-import com.amazonaws.services.ec2.AmazonEC2Client
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient
+import com.amazonaws.services.cloudwatch._
+import com.amazonaws.services.ec2._
+import com.amazonaws.services.identitymanagement._
+import com.amazonaws.services.s3._
+import com.amazonaws.services.elasticmapreduce._
 import scalaz._, Scalaz._, \&/._
 import scalaz.concurrent.Task
 import scalaz.effect._
@@ -238,8 +238,8 @@ trait AwsSupport[R] {
     Aws.using[A, B, R, C](a)(run)
 }
 
-object EC2Action extends AwsSupport[AmazonEC2Client]
-object S3Action extends AwsSupport[AmazonS3Client]
-object IAMAction extends AwsSupport[AmazonIdentityManagementClient]
-object EMRAction extends AwsSupport[AmazonElasticMapReduceClient]
-object CloudWatchAction extends AwsSupport[AmazonCloudWatchClient]
+object EC2Action extends AwsSupport[AmazonEC2]
+object S3Action extends AwsSupport[AmazonS3]
+object IAMAction extends AwsSupport[AmazonIdentityManagement]
+object EMRAction extends AwsSupport[AmazonElasticMapReduce]
+object CloudWatchAction extends AwsSupport[AmazonCloudWatch]

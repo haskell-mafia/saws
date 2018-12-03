@@ -1,7 +1,7 @@
 package com.ambiata.saws
 package ec2
 
-import com.amazonaws.services.ec2.AmazonEC2Client
+import com.amazonaws.services.ec2.AmazonEC2
 import com.amazonaws.services.ec2.model._
 import com.ambiata.saws.core._
 import com.ambiata.saws.ec2._
@@ -28,7 +28,7 @@ object EC2Subnets {
 
   def routing(subnet: Subnet, vpc: Vpc): EC2Action[Unit] = for {
     routes  <- EC2RouteTables.findByVpcOrFail(vpc.getVpcId)
-    _       <- EC2Action((client: AmazonEC2Client) =>
+    _       <- EC2Action((client: AmazonEC2) =>
                  client.associateRouteTable(
                    (new AssociateRouteTableRequest)
                      .withRouteTableId(routes.getRouteTableId)

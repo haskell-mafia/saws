@@ -1,9 +1,9 @@
 package com.ambiata.saws
 package core
 
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.ec2.AmazonEC2Client
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient
+import com.amazonaws.services.s3._
+import com.amazonaws.services.ec2._
+import com.amazonaws.services.identitymanagement._
 
 import com.ambiata.mundane.control._
 import com.ambiata.mundane.testing.Arbitraries._
@@ -80,13 +80,13 @@ class AwsActionSpec extends UnitSpec with ScalaCheck { def is = s2"""
   /*  Aws Usage */
 
   def iam =
-    IAMAction(client => client) must beOkLike(_ must beAnInstanceOf[AmazonIdentityManagementClient])
+    IAMAction(client => client) must beOkLike(_ must beAnInstanceOf[AmazonIdentityManagement])
 
   def s3 =
-    S3Action(client => client) must beOkLike(_ must beAnInstanceOf[AmazonS3Client])
+    S3Action(client => client) must beOkLike(_ must beAnInstanceOf[AmazonS3])
 
   def ec2 =
-    EC2Action(client => client) must beOkLike(_ must beAnInstanceOf[AmazonEC2Client])
+    EC2Action(client => client) must beOkLike(_ must beAnInstanceOf[AmazonEC2])
 
   def composition = {
     val ten = EC2Action(_ => 10)
