@@ -1,15 +1,15 @@
 package com.ambiata.saws
 package ses
 
-import com.ambiata.com.amazonaws.services.simpleemail._
-import com.ambiata.com.amazonaws.services.simpleemail.model.{Message => AwsMessage, _}
+import com.amazonaws.services.simpleemail._
+import com.amazonaws.services.simpleemail.model.{Message => AwsMessage, _}
 import com.ambiata.mundane.control._
 
 import scala.collection.JavaConverters._
 import scalaz._, Scalaz._, \&/._
 
 object Email {
-  def withClient[A](f: AmazonSimpleEmailServiceClient => A): Result[A] =
+  def withClient[A](f: AmazonSimpleEmailService => A): Result[A] =
     Result.safe(f(core.Clients.ses))
 
   def send(message: Message): Result[MessageId] =

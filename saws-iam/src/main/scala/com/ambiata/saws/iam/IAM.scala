@@ -1,8 +1,8 @@
 package com.ambiata.saws
 package iam
 
-import com.ambiata.com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient
-import com.ambiata.com.amazonaws.services.identitymanagement.model.{InstanceProfile => AwsInstanceProfile, _}
+import com.amazonaws.services.identitymanagement.{AmazonIdentityManagement, AmazonIdentityManagementClient}
+import com.amazonaws.services.identitymanagement.model.{InstanceProfile => AwsInstanceProfile, _}
 import com.ambiata.mundane.control.Result
 import com.ambiata.mundane.control.Result.safe
 import com.ambiata.saws.core.IAMAction
@@ -12,7 +12,7 @@ import scalaz._
 import scala.collection.JavaConverters._
 
 /** Wrapper for Java IAM client. */
-case class IAM(client: AmazonIdentityManagementClient) {
+case class IAM(client: AmazonIdentityManagement) {
 
   /** Returns true if a role with the specified name exists. */
   def roleExists(roleName: String): Result[Boolean] =
@@ -50,7 +50,10 @@ case class IAM(client: AmazonIdentityManagementClient) {
   def deleteRole(roleName: String): Result[Unit] = {
     clearRolePolicies(roleName) >>
     deleteInstanceProfile(roleName) >>
-    safe { client.deleteRole((new DeleteRoleRequest).withRoleName(roleName)) }
+    safe {
+      client.deleteRole((new DeleteRoleRequest).withRoleName(roleName))
+      ()
+    }
   }
 
 
@@ -60,7 +63,10 @@ case class IAM(client: AmazonIdentityManagementClient) {
       .withRoleName(roleName)
       .withPolicyName(policy.name)
       .withPolicyDocument(policy.document)
-    safe { client.putRolePolicy(policyReq) }
+    safe {
+      client.putRolePolicy(policyReq)
+      ()
+    }
   }
 
   def addRolePolicy(roleName: String, policy: AwsManagedPolicy): Result[Unit] = {

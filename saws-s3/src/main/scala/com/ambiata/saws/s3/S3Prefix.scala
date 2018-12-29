@@ -1,8 +1,8 @@
 package com.ambiata.saws.s3
 
-import com.ambiata.com.amazonaws.AmazonServiceException
-import com.ambiata.com.amazonaws.services.s3.AmazonS3Client
-import com.ambiata.com.amazonaws.services.s3.model._
+import com.amazonaws.AmazonServiceException
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model._
 import com.ambiata.mundane.io._
 import com.ambiata.mundane.path._
 import com.ambiata.saws.core._
@@ -102,7 +102,7 @@ case class S3Prefix(bucket: String, prefix: String) {
   def exists: S3Action[Boolean] =
     if (bucket.equals("")) S3Action.ok(false)
     else {
-      S3Action((client: AmazonS3Client) => try {
+      S3Action((client: AmazonS3) => try {
         val request = new ListObjectsRequest(bucket, awsPrefix, null, "/", null)
         request.setMaxKeys(1)
         val list = client.listObjects(request)

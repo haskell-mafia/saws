@@ -1,24 +1,37 @@
 package com.ambiata.saws
 package core
 
-import com.ambiata.com.amazonaws.AmazonWebServiceClient
-import com.ambiata.com.amazonaws.services.cloudwatch.AmazonCloudWatchClient
-import com.ambiata.com.amazonaws.services.s3.AmazonS3Client
-import com.ambiata.com.amazonaws.services.ec2.AmazonEC2Client
-import com.ambiata.com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient
-import com.ambiata.com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient
-import com.ambiata.com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient
+import com.amazonaws.AmazonWebServiceClient
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
+import com.amazonaws.client.builder.AwsSyncClientBuilder
+import com.amazonaws.services.cloudwatch._
+import com.amazonaws.services.ec2._
+import com.amazonaws.services.elasticmapreduce._
+import com.amazonaws.services.identitymanagement._
+import com.amazonaws.services.s3._
+import com.amazonaws.services.simpleemail._
 
 object Clients {
-  def s3  = configured(new AmazonS3Client(), "s3-ap-southeast-2.amazonaws.com")
-  def ec2 = configured(new AmazonEC2Client(), "ec2.ap-southeast-2.amazonaws.com")
-  def iam = configured(new AmazonIdentityManagementClient(), "https://iam.amazonaws.com")
-  def emr = configured(new AmazonElasticMapReduceClient(), "elasticmapreduce.ap-southeast-2.amazonaws.com")
-  def ses = configured(new AmazonSimpleEmailServiceClient(), "email.us-east-1.amazonaws.com")
-  def cw = configured(new AmazonCloudWatchClient(), "monitoring.ap-southeast-2.amazonaws.com")
+
+  def s3 = configured(AmazonS3ClientBuilder.standard(), "s3-ap-southeast-2.amazonaws.com", "ap-southeast-2")
+
+  def ec2 = configured(AmazonEC2ClientBuilder.standard(), "ec2.ap-southeast-2.amazonaws.com", "ap-southeast-2")
+
+  def iam = configured(AmazonIdentityManagementClientBuilder.standard(), "https://iam.amazonaws.com", "us-east-1")
+
+  def emr = configured(AmazonElasticMapReduceClientBuilder.standard(), "elasticmapreduce.ap-southeast-2.amazonaws.com", "ap-southeast-2")
+
+  def ses = configured(AmazonSimpleEmailServiceClientBuilder.standard(), "email.us-east-1.amazonaws.com", "us-east-1")
+
+  def cw = configured(AmazonCloudWatchClientBuilder.standard(), "monitoring.ap-southeast-2.amazonaws.com", "ap-southeast-2")
 
   def configured[A <: AmazonWebServiceClient](a: A, endpoint: String): A = {
     a.setEndpoint(endpoint)
     a
+  }
+
+  def configured[Builder <: AwsSyncClientBuilder[Builder, Client], Client](builder: AwsSyncClientBuilder[Builder, Client], endpoint: String, region: String): Client = {
+    builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, region))
+      .build()
   }
 }

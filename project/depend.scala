@@ -1,5 +1,5 @@
+import sbt.Keys.libraryDependencies
 import sbt._
-import Keys._
 
 object depend {
   val scalaz = Seq(  "org.scalaz" %% "scalaz-core"   % "7.1.0"
@@ -17,11 +17,18 @@ object depend {
   val disorder =
     Seq("com.ambiata" %% "disorder" % "0.0.1-20150824025853-fa03215" % "test")
 
-  val aws = Seq(
-      "com.ambiata" %% "saws-aws"  % "1.2.1-20151011232301-d2b3e24" intransitive()
-    , "commons-logging"            % "commons-logging"     % "1.1.1"
+  val awsVersion = "1.11.357"
+  val aws     = Seq(
+      "com.amazonaws"              % "aws-java-sdk"        % awsVersion
+  )
+
+  val awsDeps     = Seq(
+      "commons-logging"            % "commons-logging"     % "1.1.1"
     , "com.owtelse.codec"          % "base64"              % "1.0.6"
     , "javax.mail"                 % "mail"                % "1.4.7")
+
+  def awsLib(name: String) = Seq(
+    "com.amazonaws" % s"aws-java-sdk-$name" % awsVersion)
 
   val specs2Version = "2.4.5"
 
@@ -34,15 +41,5 @@ object depend {
     , "org.specs2" %% "specs2-scalacheck"  % specs2Version % "test")
 
   val ssh = Seq("com.decodified" %% "scala-ssh" % "0.6.4")
-
-  val resolvers = Seq(
-      Resolver.sonatypeRepo("releases")
-    , Resolver.typesafeRepo("releases")
-    , "cloudera"              at "https://repository.cloudera.com/content/repositories/releases"
-    , Resolver.url("ambiata-oss", new URL("https://ambiata-oss.s3.amazonaws.com"))(Resolver.ivyStylePatterns)
-    , Resolver.url("ambiata-oss-v2", new URL("https://ambiata-oss-v2.s3.amazonaws.com"))(Resolver.ivyStylePatterns)
-    , "Scalaz Bintray Repo"   at "http://dl.bintray.com/scalaz/releases"
-    // For 2.11 version of scala-ssh only
-    , "spray.io"              at "http://repo.spray.io")
 
 }
