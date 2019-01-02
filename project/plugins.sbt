@@ -7,6 +7,8 @@ resolvers += Resolver.sonatypeRepo("releases")
 
 resolvers += Resolver.typesafeRepo("releases")
 
+resolvers += Resolver.bintrayIvyRepo("emersonloureiro", "sbt-plugins")
+
 resolvers += "Era7 maven releases" at "https://s3-eu-west-1.amazonaws.com/releases.era7.com"
 
 addSbtPlugin("com.ambiata" % "promulgate" % "0.12.0-20190102000029-19db212")

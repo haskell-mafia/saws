@@ -17,7 +17,7 @@ lazy val standardSettings = Defaults.coreDefaultSettings ++
 
 lazy val projectSettings: Seq[Def.Setting[_]] = Seq(
     organization := "com.ambiata"
-  , version in ThisBuild := "1.4.0"
+  , version in ThisBuild := "1.4.1"
   , scalaVersion := "2.11.6"
   , crossScalaVersions := Seq(scalaVersion.value)
   , publishArtifact in (Test, packageBin) := true

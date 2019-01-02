@@ -19,7 +19,7 @@ object S3Buckets {
     list.map(_.find(_.getName == name))
 
   def exists(name: String): S3Action[Boolean] =
-    S3Action(client => client.doesBucketExist(name))
+    S3Action(client => client.doesBucketExistV2(name))
 
   def ensure(name: String): S3Action[Bucket] = for {
     e <- exists(name)

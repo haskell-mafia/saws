@@ -1,17 +1,17 @@
 package com.ambiata.saws.s3
 
 import com.ambiata.saws.core._
-import com.ambiata.mundane.io._, MemoryConversions._
-
+import com.ambiata.mundane.io._
+import MemoryConversions._
 import com.amazonaws.event.{ProgressEvent, ProgressListener}
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model._
-import com.amazonaws.services.s3.transfer.{TransferManagerConfiguration, TransferManager}
+import com.amazonaws.services.s3.transfer.{TransferManager, TransferManagerBuilder, TransferManagerConfiguration}
 import com.amazonaws.services.s3.transfer.model.UploadResult
-
 import java.io._
 
-import scalaz._, Scalaz._
+import scalaz._
+import Scalaz._
 
 object S3Operations {
   val DELIMITER: String = "/"
@@ -85,18 +85,16 @@ object S3Operations {
                                      tick: Long => Unit, metadata: ObjectMetadata): S3Action[S3UploadResult] = {
     S3Action { client: AmazonS3 =>
       // create a transfer manager
-      val configuration = new TransferManagerConfiguration
+      val builder = TransferManagerBuilder.standard().withS3Client(client)
       if (maxPartSize < 5.mb.toBytes) setupConf(5.mb.toBytes.value)
       else setupConf(maxPartSize.toBytes.value)
 
       def setupConf(l: Long) = {
-        configuration.setMinimumUploadPartSize(l)
-        configuration.setMultipartUploadThreshold(l.toLong)
+        builder.setMinimumUploadPartSize(l)
+        builder.setMultipartUploadThreshold(l.toLong)
       }
 
-      val transferManager = new TransferManager(client)
-      transferManager.setConfiguration(configuration)
-      transferManager
+      builder.build()
     }.flatMap { transferManager: TransferManager =>
       putStreamMultiPartWithTransferManager(bucket, key, transferManager, stream, readLimit, tick, metadata) map { upload =>
         try     upload()
