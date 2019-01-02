@@ -3,6 +3,8 @@ import com.ambiata.promulgate.project.ProjectPlugin._
 import ohnosequences.sbt.SbtS3Resolver.autoImport.{awsProfile, s3region}
 import sbt.Def
 import buildResolvers.allResolvers
+import com.amazonaws.auth.{EnvironmentVariableCredentialsProvider, InstanceProfileCredentialsProvider}
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.ambiata.promulgate.project.Sett
 
 lazy val ossBucket: String =
@@ -21,7 +23,10 @@ lazy val projectSettings: Seq[Def.Setting[_]] = Seq(
   , publishArtifact in (Test, packageBin) := true
   , awsProfile := "default"
   , s3region := Region.AP_Sydney
-  , resolvers ++= allResolvers(s3region.value, awsProfile.value)
+  , s3credentials := new EnvironmentVariableCredentialsProvider() |
+    InstanceProfileCredentialsProvider.getInstance() |
+    new ProfileCredentialsProvider(awsProfile.value)
+  , resolvers ++= allResolvers.value
   , libraryDependencies ++= depend.awsDeps
 ) ++ Seq(prompt)
 
