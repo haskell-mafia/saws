@@ -1,11 +1,11 @@
 package com.ambiata.saws
 package iam
 
-import com.amazonaws.services.identitymanagement.{AmazonIdentityManagement, AmazonIdentityManagementClient}
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.identitymanagement.{AmazonIdentityManagement, AmazonIdentityManagementClientBuilder}
 import com.amazonaws.services.identitymanagement.model.{InstanceProfile => AwsInstanceProfile, _}
 import com.ambiata.mundane.control.Result
 import com.ambiata.mundane.control.Result.safe
-import com.ambiata.saws.core.IAMAction
 import scalaz.Scalaz._
 import scalaz._
 
@@ -154,11 +154,8 @@ case class IAM(client: AmazonIdentityManagement) {
 
 /** Sydney-region IAM client. */
 object IAM {
-  val IamEndpoint = "https://iam.amazonaws.com"
-
   def apply(): IAM = {
-    val c = new AmazonIdentityManagementClient()
-    c.setEndpoint(IamEndpoint)
+    val c = AmazonIdentityManagementClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_2).build()
     IAM(c)
   }
 

@@ -1,9 +1,9 @@
 package com.ambiata.saws
 package core
 
-import com.amazonaws.AmazonWebServiceClient
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 import com.amazonaws.client.builder.AwsSyncClientBuilder
+import com.amazonaws.regions.Regions
 import com.amazonaws.services.cloudwatch._
 import com.amazonaws.services.ec2._
 import com.amazonaws.services.elasticmapreduce._
@@ -13,24 +13,27 @@ import com.amazonaws.services.simpleemail._
 
 object Clients {
 
-  def s3 = configured(AmazonS3ClientBuilder.standard(), "s3-ap-southeast-2.amazonaws.com", "ap-southeast-2")
+  def s3 = configured(AmazonS3ClientBuilder.standard(), Regions.AP_SOUTHEAST_2)
 
-  def ec2 = configured(AmazonEC2ClientBuilder.standard(), "ec2.ap-southeast-2.amazonaws.com", "ap-southeast-2")
+  def ec2 = configured(AmazonEC2ClientBuilder.standard(), Regions.AP_SOUTHEAST_2)
 
-  def iam = configured(AmazonIdentityManagementClientBuilder.standard(), "https://iam.amazonaws.com", "us-east-1")
+  def iam = configured(AmazonIdentityManagementClientBuilder.standard(), Regions.AP_SOUTHEAST_2)
 
-  def emr = configured(AmazonElasticMapReduceClientBuilder.standard(), "elasticmapreduce.ap-southeast-2.amazonaws.com", "ap-southeast-2")
+  def emr = configured(AmazonElasticMapReduceClientBuilder.standard(), Regions.AP_SOUTHEAST_2)
 
-  def ses = configured(AmazonSimpleEmailServiceClientBuilder.standard(), "email.us-east-1.amazonaws.com", "us-east-1")
+  // only valid regions are us-east-1, us-west-2, eu-west-1
+  def ses = configured(AmazonSimpleEmailServiceClientBuilder.standard(), Regions.US_EAST_1)
 
-  def cw = configured(AmazonCloudWatchClientBuilder.standard(), "monitoring.ap-southeast-2.amazonaws.com", "ap-southeast-2")
+  def cw = configured(AmazonCloudWatchClientBuilder.standard(), Regions.AP_SOUTHEAST_2)
 
-  def configured[A <: AmazonWebServiceClient](a: A, endpoint: String): A = {
-    a.setEndpoint(endpoint)
-    a
+  def configured[Builder <: AwsSyncClientBuilder[Builder, AwsClient], AwsClient](builder: AwsSyncClientBuilder[Builder, AwsClient], region: Regions): AwsClient = {
+    builder.withRegion(region).build()
   }
 
-  def configured[Builder <: AwsSyncClientBuilder[Builder, Client], Client](builder: AwsSyncClientBuilder[Builder, Client], endpoint: String, region: String): Client = {
+  /**
+    * This should only be used when a non-standard endpoint is being used, AWS is much better at working out what the endpoint should be.
+    */
+  def configured[Builder <: AwsSyncClientBuilder[Builder, AwsClient], AwsClient](builder: AwsSyncClientBuilder[Builder, AwsClient], endpoint: String, region: String): AwsClient = {
     builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, region))
       .build()
   }
